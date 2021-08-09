@@ -12,16 +12,9 @@ import Form from '../../Components/Form';
 import Todo from '../../Components/Todo';
 
 const useStyles = makeStyles({
-  container: {
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  h1: {
-    fontSize: '4em',
+  root: {
+    display: 'grid',
+    placeItems: 'center',
   },
 });
 
@@ -29,26 +22,35 @@ export default function HomePage() {
   const [todos, setTodos] = useState([]);
 
   function addTodo(todo) {
-    const newTodos = [todo, ...todos];
-    setTodos(newTodos);
+    setTodos([todo, ...todos]);
   }
 
   function updateTodo(todoId, newValue) {
-    setTodos(prev => prev.map(item => (item.id === todoId ? newValue : item)));
+    const index = todos.findIndex(t => t.id == todoId);
+    todos[index].text = newValue;
+    setTodos(todos);
   }
 
   function removeTodo(id) {
-    const removedArr = [...todos].filter(todo => todo.id !== id);
-    setTodos(removedArr);
+    setTodos([...todos].filter(todo => todo.id !== id));
   }
 
   const classes = useStyles();
 
   return (
-    <Container className={classes.container}>
-      <h1 className={classes.h1}>todos</h1>
-      <Form className={classes.form} onSubmit={addTodo} />
-      <Todo todos={todos} updateTodo={updateTodo} removeTodo={removeTodo} />
+    <Container className={classes.root}>
+      <h1 style={{ fontSize: '3em' }}>todos</h1>
+      <Form onSubmit={addTodo} />
+
+      {todos.map((todo, index) => (
+        <Todo
+          key={index}
+          todo={todo}
+          // handleToggle={done}
+          updateTodo={updateTodo}
+          removeTodo={removeTodo}
+        />
+      ))}
     </Container>
   );
 }

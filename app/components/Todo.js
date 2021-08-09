@@ -1,49 +1,65 @@
 import React, { useState } from 'react';
+import { TextField, IconButton } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Form from './Form';
 
-export default function Todo({ todos, removeTodo, updateTodo }) {
-  const [edit, setEdit] = useState({ id: null, value: '' });
+export default function Todo({ todo, removeTodo, updateTodo }) {
+  const [edit, setEdit] = useState();
 
-  const submitUpdate = value => {
-    updateTodo(edit.id, value);
-    setEdit({ id: null, value: '' });
-  };
+  const [editable, setEditable] = useState(false);
 
-  if (edit.id) {
-    return <Form edit={edit} onSubmit={submitUpdate} />;
-  }
-
-  return todos.map((todo, index) => (
+  return (
     <div
       style={{
+        width: 320,
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
       }}
-      key={index}
     >
-      <div
-        style={{
-          height: 50,
-          width: 200,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        key={todo.id}
-      >
-        {todo.text}
-      </div>
-      <EditIcon
-        style={{ color: 'yellow' }}
-        onClick={() => setEdit({ id: todo.id, value: todo.text })}
-      />
-      <DeleteIcon
-        style={{ color: 'red' }}
-        onClick={() => removeTodo(todo.id)}
-      />
+      {editable ? (
+        <>
+          <TextField
+            value={edit}
+            onChange={e => {
+              setEdit(e.target.value);
+            }}
+          />
+          <IconButton
+            onClick={() => {
+              setEditable(false);
+              updateTodo(todo.id, edit);
+            }}
+          >
+            update
+          </IconButton>
+        </>
+      ) : (
+        <>
+          <div
+            style={{
+              fontSize: '1.25em',
+              height: 50,
+              width: '80%',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            {todo.text}
+          </div>
+          <IconButton
+            onClick={e => {
+              setEditable(true);
+              setEdit(todo.text);
+            }}
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => removeTodo(todo.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </>
+      )}
     </div>
-  ));
+  );
 }
